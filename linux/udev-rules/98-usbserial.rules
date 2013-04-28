@@ -1,0 +1,7 @@
+###
+# UDEV Rule for the StarTech FTDI USB to Serial Adapter (it lives in Sealab).
+# Gives r/w permissions to the USB-Serial UART converter to all users
+# Good for ROS.
+# -Riley
+### 
+SUBSYSTEMS=="usb", ACTION=="add", ATTRS{idVendor}=="0403", ATTRS{idProduct}=="6001", MODE="666"
