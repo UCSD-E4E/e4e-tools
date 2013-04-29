@@ -1,0 +1,84 @@
+###
+# How to make a udev rules file for a USB device to provide r/w/x Permissions to a device on connect
+# Author(s): Riley Yeakle (ryeakle@gmail.com)
+### 
+
+Let's take a look at this example udev rules (98-usbserial.rules):
+-----------------------------------
+###
+# UDEV Rule for the StarTech FTDI USB to Serial Adapter (it lives in Sealab).
+# Gives r/w permissions to the USB-Serial UART converter to all users
+# Good for ROS.
+# -Riley
+### 
+SUBSYSTEMS=="usb", ACTION=="add", ATTRS{idVendor}=="0403", ATTRS{idProduct}=="6001", MODE="666"
+-----------------------------------
+
+First off, note that anything after the # character is a comment and thus is not read by linux. Then, we see there is only one line with the following fields:
+
+SUBSYSTEMS=="usb" -indicates that this will be a usb device
+ACTION=="add" -inidicates that we want to add the device
+ATTRS{idVendor}=="0403" -identify the device's vendor we want to work with
+ATTRS{idProduct}=="6001" -identify the device's specific product id
+MODE="666" -Specify the permissions level for the device
+
+To find the vendor and product id, connect the device to your computer, 
+open a terminal, and enter the command:
+lsusb
+
+Something like this should show up:
+----------------------------------
+Bus 001 Device 002: ID 04f2:b17e Chicony Electronics Co., Ltd 
+Bus 003 Device 003: ID 0403:6001 Future Technology Devices International, Ltd FT232 USB-Serial (UART) IC
+Bus 003 Device 002: ID 047d:1029 Kensington Mouse*in*a*Box Optical Elite
+Bus 005 Device 002: ID 03f0:231d Hewlett-Packard 
+Bus 001 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
+Bus 002 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
+Bus 003 Device 001: ID 1d6b:0001 Linux Foundation 1.1 root hub
+Bus 004 Device 001: ID 1d6b:0001 Linux Foundation 1.1 root hub
+Bus 005 Device 001: ID 1d6b:0001 Linux Foundation 1.1 root hub
+Bus 006 Device 001: ID 1d6b:0001 Linux Foundation 1.1 root hub
+---------------------------------
+
+In this case, we want the Future Technology Devices USB-Serial (UART) device.
+In the field ID, we see something like:
+****:****
+where * is a letter or number.
+The first four are the Vendor ID, and the second 4 are the Product ID, which we 
+use in the udev rules file.
+
+Now that we've identified the device, we only need to figure out what to do with
+the MODE setting in the udev rules file. MODE sets the r/w/x (read/write/execute) 
+permissions of the file. Since the root user by default is the only user
+with write permissions for the USB-Serial converter, we have to sudo everything
+that needs to write to the USB-Serial converter, which is a pain. If we give all 
+users rw permissions, then no special priviliges are needed to read and write to
+the device.
+
+You can look online to see what the different permissions codes mean, but in this
+case, '666' means 'give all users rw permissions' 
+
+Once you've written the udev rules file for your device with the correct permissions,
+copy it to the udev rules directory with 
+
+sudo cp your-rules-file.rules /etc/udev/rules.d
+
+then run 
+
+sudo udevadm control --reload-rules
+
+to update the udev rules with your new rules file.
+
+To check to see if your rule is working, connect the device, find where it mounts
+(usually /dev/ttyUSB*, where * is a number), then run 
+
+ls -l /path/to/device/mount/point
+
+You should see something like:
+---------------------------------
+crw-rw-rw- 1 root dialout 188, 0 Apr 29 13:03 /dev/ttyUSB0
+---------------------------------
+
+The crw-rw-rw- indicates the device permissions for the owner-group-other. In this
+case, we see that everyone has rw permissions. Success.
+
