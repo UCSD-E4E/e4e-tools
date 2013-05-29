@@ -25,13 +25,18 @@
 
 # Modified by Antonella Wilby, May 2013.
 # Added support for center-to-center spacing specification for circle patterns.
-# NOTE: this needs a lot of fixes
+# NOTE: this entire script needs a lot of fixes, and working stuff hasn't been thoroughly tested!
 # KNOWN ISSUES: Text always displays, even when use_text is set to false
 #		When using fiducials, bottom and right borders are small
 #		When using fiducials, bottom text overlaps targets
 #		Can't yet specify center-to-center spacing for asymmetric circles
 #		Text runs off side of page for smaller targets --
 #			need to size text based on layout size
+#		Invert function seems to be confused throughout script...
+#			not sure if invert means set to black on white or white on black.
+#			For now, when invert is set it outputs white targets on black background.
+#
+# Please verify the results you get from this script!
 
 import sys
 import cairo
@@ -288,23 +293,6 @@ def draw_circles(cr, w, h):
 	    cr.fill()
 	    cr.save()
 
-
-"""
-            if not i%2:
-                if not j%2:
-                    if invert:
-                        cr.set_source_rgb(1,1,1)
-                    else:
-                        cr.set_source_rgb(0,0,0)
-                    if units == 1:
-			print "width spacing: ", border*in_to_pts+i+0.5
-                        cr.arc(border*in_to_pts+i+0.5,border*in_to_pts+j+0.5,0.5,0,2*pi)
-                    elif units == 2:
-                        cr.arc(border*cm_to_pts+i+0.5,border*cm_to_pts+j+0.5,0.5,0,2*pi)
-                    cr.fill()
-                    cr.save()
-
-"""
 
 def draw_circles_asymmetric(cr, w, h):
     in_to_pts = 1/72.0
