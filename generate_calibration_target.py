@@ -44,6 +44,10 @@ import pango
 import pangocairo
 from math import pi
 from optparse import OptionParser
+import pygtk
+import gtk
+import Image
+import StringIO
 
 parser = OptionParser()
 parser.add_option("-W", "--width", dest="width", help="Number of squares or \
@@ -323,6 +327,38 @@ def draw_circles_asymmetric(cr, w, h):
                         cr.arc(border*cm_to_pts+i+0.5,border*cm_to_pts+j+0.5,0.5,0,2*pi)
                     cr.fill()
                     cr.save()
+		    
+def draw_logo(cr):
+    # Add the UCSD Logo to the page -- only works with PNGs!
+    ucsdLogo = Image.open('ucsd_logo.png')
+    ucsdLogoBuffer = StringIO.StringIO()
+    ucsdLogo.save(ucsdLogoBuffer, format="PNG")
+    ucsdLogoBuffer.seek(0)
+    ucsdLogoSurface = cairo.ImageSurface.create_from_png(ucsdLogoBuffer)
+    
+    # Add the Engineers for Exploration logo to the page
+    e4eLogo = Image.open('e4e_logo.png')
+    e4eLogoBuffer = StringIO.StringIO()
+    e4eLogo.save(e4eLogoBuffer, format="PNG")
+    e4eLogoBuffer.seek(0)
+    e4eLogoSurface = cairo.ImageSurface.create_from_png(e4eLogoBuffer)
+    
+    # Add UCSD logo to image surface
+    cr.translate(0,0)		# Set proper position for drawing logo
+    cr.save()
+    cr.scale(0.25,0.25)
+    cr.set_source_surface(ucsdLogoSurface, 20, 20)
+    cr.paint()
+    cr.restore()
+    
+    # Add the Engineers for Exploration logo to image surface
+    cr.translate(100,0)		# Set proper position for drawing logo
+    cr.save()
+    cr.scale(0.25,0.25)
+    cr.set_source_surface(e4eLogoSurface, 20, 20)
+    cr.paint()
+    cr.restore()
+
             
 if __name__=='__main__':
     pts_to_in = 72.0
@@ -350,12 +386,22 @@ if __name__=='__main__':
     surface = cairo.PDFSurface(filename, layoutWidth, layoutHeight)
     cr = cairo.Context(surface)
     
+    # Add the UCSD and E4E logos to the page
+    draw_logo(cr)
+    
 
+    # This sets to black??  FIX LATER
     if invert:
         cr.set_source_rgb(0,0,0)
         cr.rectangle(0,0,w,h)
         cr.fill()
         cr.save()
+	
+    
+    # Reset the cursor to the upper left-hand corner
+    cr.translate(-100,0)
+    
+    # Move the "cursor" to start drawing inside border
     if units == 1:
         cr.translate(border*pts_to_in, border*pts_to_in)
         cr.scale(shapesize*pts_to_in, shapesize*pts_to_in)
@@ -425,6 +471,7 @@ if __name__=='__main__':
 
 	# Set color of text (light gray)
 	cr.set_source_rgb(0.7,0.7,0.7)
+	
 
     pangocairo_context.update_layout(layout)		# Update layout
     pangocairo_context.show_layout(layout)		# Show layout
