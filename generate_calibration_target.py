@@ -35,7 +35,6 @@
 #		Invert function seems to be confused throughout script...
 #			not sure if invert means set to black on white or white on black.
 #			For now, when invert is set it outputs white targets on black background.
-#		Circle drawing function not working!!!
 #
 # Please verify the results you get from this script!
 
@@ -332,11 +331,11 @@ if __name__=='__main__':
 
     # Calculate the width and height of the whole target
     if pattern == 1 or pattern == 2 or pattern == 4:
-	layoutWidth = width*(shapesize) + (width-2)*spacing + 2*border
-	layoutHeight = height*shapesize + (height-2)*spacing + 2*border
-    if pattern == 3: 
 	layoutWidth = width*(shapesize) + 2*border
-	layoutHeight = height*(shapesize) + 2*border
+	layoutHeight = height*shapesize + 2*border
+    if pattern == 3: 
+	layoutWidth = width*(shapesize) + (width-1)*(spacing-shapesize) + 2*border
+	layoutHeight = height*(shapesize) + (height-1)*(spacing-shapesize) + 2*border
 	
     # Convert the layout height and width to proper units
     if units == 1:	# If units are in inches
