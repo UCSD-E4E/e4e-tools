@@ -383,6 +383,14 @@ if __name__=='__main__':
     fontname = "Sans"
     font = pango.FontDescription(fontname + " 0.2")
     layout.set_font_description(font)
+    
+    
+    # Decrease font size if the layoutWidth is too small
+    if int(layoutWidth/pts_to_in) <= 11:
+	decreaseScale =  (layoutWidth / (10*pts_to_in)) - 0.1
+	font.set_size(int(font.get_size() * decreaseScale ))
+	layout.set_font_description(font)	# Update the font in the layout
+
 
     # Add text description.
     if use_text:
