@@ -1,28 +1,35 @@
-function [ stats ]= pcase(index,len,wall,od,display)
-%function [ Pflow Pinf Pstab beam simple hemi] = 
-%                pcase(index,length,wall,od,display)
+function [ ]= pressurecase(mat_index,len,wall,rad)
+%
+% Function for computing the pressure at which buckling occurs in a 
+% thin-walled pressure vessel. Computes buckling for both cylindrical and
+% spherical pressure vessel designs.
+%
+% Author: Antonella Wilby
+% Last Updated: 8/20/2014
+%
 % PARAMETERS: 
-%   index: material index:
+%   mat_index: material index:
 %       1 =  borosilicate glass
 %       2 = 6061-T6 aluminum
 %       3 = 7075-T6 aluminum
-%       4 = 316 stainless
-%       5 = delrin
-%       6 = UHMW polyethylene
+%       4 = 316 stainless steel
+%       5 = delrin D100
+%       6 = UHMW (Ultra-High Molecular Weight) polyethylene
 %       7 = Ertalyte
 %       8 = PVC (Polyvinyl chloride)
-%   len: length of pressure case in inches
+%       9 = Acrylic
+%       10 = Lexan
+%   len: length of pressure case cylinder in inches
 %   wall: wall thickness in inches
-%   od: outer diameter of pressure case in inches
-%   display: 1 will display the results in a readable format
+%   rad: radius of pressure case cylinder in inches
 %
 % MATERIAL PROPERTIES:
-%   material: material name
-%   young: young's modulus (elastic tensile modulus) in kpsi
-%   yield: yield strength in kpsi
-%   poisson: Poisson's ratio
-%   thermal: ??????
-%   density: density in gm/cc
+%   1: young's modulus (elastic tensile modulus) in MPa
+%   2: ultimate tensile strength in MPa
+%   3: yield strength in MPa
+%   4: Poisson's ratio
+%   5: thermal conductivity in W/m K
+%   6: density: density in gm/cc
 %
 % RETURNS:
 %   Pflow: pressure for plastic flow in psi 
@@ -32,62 +39,59 @@ function [ stats ]= pcase(index,len,wall,od,display)
 %   simple: min. thickness for simple-supported flat end-cap (thousandths of an inch)
 %   hemi: min. thickness for semi-hemispherical end-cap (thousandths of an inch)
 %   
-% input is in inches
-% output is in psi and 1000*inches
-
 
 
 % Load materials data
 load 'material_properties.mat'
 
-
-pcase_properties = ['Plastic flow    (psi)'; 
-        'infinite Length (psi)';
-		'Finite Length   (psi)';
-		'Beam EndCap     (mil)';
-		'Simple EndCap   (mil)';
-		'Semi-Hemisphere (mil)';
-		];
-
+% Check if thin-walled assumption holds
+%if( rad/wall  > 10)
     
-% Calculations for cylinderical pressure case follow.
-E = 1000.0 * young(index);
-SY = 1000.0 * yield(index);
-nu = poisson(index);
-a = od/2;  % = radius
+%disp('Thin-walled assumption holds.');
 
-Pflow = wall .* SY ./ a;
-Pinf = E .* (wall ./ a).^3 ./ ( 4*(1-nu.*nu) );
-Pstab = 0.807 * E .* (wall ./ len) .* (wall./a).^1.5 ./ ((1-nu.*nu).^0.75);
-      
-% Pflow is pressure for plastic flow. 
-% Pinf is for instabilities of infinite length scale. 
-% Pstab is for finite length instabilities.
-pressure = [ Pflow; Pinf; Pstab ];
-pressure = floor(pressure);
-Pfail = min(pressure);  % max pressure before fails in one of the modes
-    
-% now compute minimum end-cap thicknesses
-beam = (a - wall) .* sqrt(0.75 * Pfail ./ SY);
-simple = (a - wall) .* sqrt(0.375 * (3+nu) .* Pfail ./ SY);
-hemi = a .* Pfail ./ (2*SY);
-thickness = [ beam; simple; hemi] * 1000;
-thickness = floor(thickness);
 
-stats = [ pressure; thickness;];
-n = length(wall);  % # of unique pts
+% Material Properties
+E = materials(1, mat_index);        % Young's modulus
+yield = materials(3, mat_index);    % Yield Strength
+nu = materials(4, mat_index);       % Poisson's ratio
+n = 2;                              % # of circumferential lobes
 
-if (display==1)
-  disp('Failure Pressures and minimum End Cap thicknesses Reqd:')
-  
-  for i = 1 : size(pcase_properties, 1)
-    t = pcase_properties(i,:);  %initialize output string
-    
-    for j = 1 : n
-	  s = sprintf('%6.0f',stats(i,j) );
-	  t = [t  s ];
-    end
-    
-	disp(t)
-  end
-end
+
+% CALCULATIONS FOR CYLINDRICAL PRESSURE CASE
+
+% Source: A.P.F. Little et al, "Inelastic Buckling of Geometrically Imperfect
+% Tubes Under External Hydrostatic Pressure," J. Ocean Tech., vol. 3, no. 1, 2008.
+
+% Buckling of an infinitely long free pipe (MPa)
+P_cr_inf = ((n^2-1)*E)/(12*(1-nu^2))*(wall/rad)^3;
+
+% Compute Von Mises critical buckling pressure (MPa)
+P_cr_vm = (  (E * (wall/rad)) / (n^2 - 1 + 0.5* (pi*rad / len)^2)  )  * ...
+       (  ( 1/(n^2 * (len/pi*rad)^2 + 1)^2 )  +  ( wall^2 / ( 12*rad^2 * (1-nu^2)) ) * ...
+       (  n^2 - 1 + (pi*rad/len)^2 )^2    );
+   
+% Compute Windenburg and Trilling's buckling pressure (DTMB) (MPa)
+P_cr_dtmb = ( 2.42 * E * (wall / (2 * rad))^(5/2) ) / ...
+            ( (1-(nu^2))^0.75 * ( (len/(2*rad)) - 0.447*(wall/(2*rad))^0.5 ) );
+        
+
+% Convert to psi
+P_cr_inf = P_cr_inf * 145.04;
+P_cr_vm = P_cr_vm * 145.04;
+P_cr_dtmb = P_cr_dtmb * 145.04;
+
+
+% Display results
+fprintf('\nCritical buckling pressures for thin-walled cylinder:\n\n');
+fprintf('Critical Pressure (infinite cylinder): %f (psi)\n', P_cr_inf);
+fprintf('Critical Pressure (Von Mises): %f (psi)\n', P_cr_vm);
+fprintf('Critical Pressure (DTMB): %f (psi)\n', P_cr_dtmb);
+
+
+
+% CALCULATIONS FOR SPHERICAL PRESSURE CASE
+
+% Critical pressure for buckling of a thin-walled sphere (MPa)
+%P_cr = (2*E*wall^2) / ( r^2 * sqrt(3 * (1-nu^2)) )
+
+% TODO
