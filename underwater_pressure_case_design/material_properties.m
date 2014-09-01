@@ -9,7 +9,7 @@
 % values only.
 % 
 % Author: Antonella Wilby
-% Last Updated: 8/20/14
+% Last Updated: 9/1/14
 % 
 % PROPERTIES:
 %   1: young's modulus (elastic tensile modulus) in MPa
@@ -62,6 +62,6 @@ acrylic = [3100;  72.4;  72.4;  0.35;  0.17;  1.18]; % metric
 % Source: http://www.associatedplastics.com/forms/pc_lexan_9034.pdf
 lexan = [2379; 65.5; 62.1; 0.37; 0; 0];
 
-materials = [glass al_6061_t6 al_7075_t6 ss_316 delrin uhmw ertalyte pvc acrylic];
+materials = [glass al_6061_t6 al_7075_t6 ss_316 delrin uhmw ertalyte pvc acrylic lexan];
 
 save('material_properties.mat', 'materials');
