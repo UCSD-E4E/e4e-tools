@@ -9,5 +9,6 @@ do
 	data=`head -n 1 /proc/stat`
 	time=`date +%s`
 	echo "$time $data" >> $log
+	# record period below
 	sleep 0.5
 done

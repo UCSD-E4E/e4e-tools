@@ -9,5 +9,6 @@ do
 	data=`cat /sys/class/hwmon/hwmon0/temp1_input`
 	time=`date +%s`
 	echo "$time $data" >> $log
+	# Record period below
 	sleep 3
 done
