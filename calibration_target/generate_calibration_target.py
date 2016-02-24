@@ -426,7 +426,7 @@ if __name__=='__main__':
     pangocairo_context.set_antialias(cairo.ANTIALIAS_SUBPIXEL)
 
     layout = pangocairo_context.create_layout()
-    fontname = "Sans"
+    fontname = "Helvetica"
     font = pango.FontDescription(fontname + " 0.2")
     layout.set_font_description(font)
     
@@ -441,14 +441,14 @@ if __name__=='__main__':
     # Add text description.
     if use_text:
         # Set position of top-left corner of text.
-        cr.translate(0,layoutHeight*(1/pts_to_in)-1.8*border)
+        cr.translate(0,layoutHeight*(1/pts_to_in)-1.7*border)
 	
 	# Set text to use if units are in inches
 	if units == 1:
 	    if pattern == 1:
 	        layout.set_text(u"{0}x{1} fiducials, {2}in squares, {3}in border".format(width, height, shapesize, border))
 	    elif pattern == 2:
-	        layout.set_text(u"{0}x{1} checkerboard, {2}in squares, {3}in border".format(width, height, shapesize, border))
+	        layout.set_text(u"{0}x{1} checkerboard".format(width, height))
 	    elif pattern == 3:
 	        layout.set_text(u"{0}x{1} circles, {2}in dia., {3}in spacing (center-to-center), {4}in border".format(width, \
 				height, shapesize, spacing, border))
