@@ -28,6 +28,59 @@ def leap(date):
             return j + 1
     return len(leap_dates)
 
+def decodeError(subsys, ecode):
+    if subsys == 1:
+        # Never used
+        return 'Unknown Error'
+    elif subsys == 2:
+        return 'Late PPM from from control radio'
+    elif subsys == 3:
+        if ecode == 0:
+            return 'Compass error resolved'
+        elif ecode == 1:
+            return 'Compass failed to initialize'
+        elif ecode == 2:
+            return 'Compass failed to read value'
+    elif subsys == 4:
+        return 'Optical Flow failed to initialize'
+    elif subsys == 5:
+        if ecode == 0:
+            return 'Throttle Failsafe resolved'
+        elif ecode == 1:
+            return 'Throttle Failsafe triggered'
+    elif subsys == 6:
+        return 'Battery Failsafe triggered'
+    elif subsys == 7:
+        if ecode == 0:
+            return 'GPS Lock restored'
+        elif ecode == 1:
+            return 'GPS Failsafe triggered'
+    elif subsys == 8:
+        if ecode == 0:
+            return 'GCS Failsafe resolved'
+        elif ecode == 1:
+            return 'GCS Failsafe triggered'
+    elif subsys == 9:
+        if ecode == 0:
+            return 'Fence breach resolved'
+        elif ecode == 1:
+            return 'Fence breach - altitude'
+        elif ecode == 2:
+            return 'Fence breach - lateral'
+        elif ecode == 3:
+            return 'Fence breach - altitude and lateral'
+    elif subsys == 10:
+        return 'Failed to enter mode'
+    elif subsys == 11:
+        if ecode == 0:
+            return 'GPS glitch resolved'
+        elif ecode == 2:
+            return 'GPS glitch detected'
+    elif subsys == 12:
+        return 'Crash detected'
+
+    return 'Unknown Error'
+
 def main():
     parser = argparse.ArgumentParser(description = 'E4E Ardupilot Autopilot '
             'Flight Log Analyzer')
@@ -36,9 +89,15 @@ def main():
     parser.add_argument('-s', '--split_log', action = 'store_true',
             help = 'If present, split log into individual flights',
             dest = 'split_log')
+    parser.add_argument('-p', '--pilot', default = '', help = 'Pilot Name')
+    parser.add_argument('-C', '--certificate', default = '', help = 'Pilot Certificate')
+    parser.add_argument('-R', '--registration', default = '', help = 'Aircraft Registration')
 
     args = parser.parse_args()
     fileName = args.log
+    pilotname = args.pilot
+    pilotcert = args.certificate
+    acftreg = args.registration
     split_log = args.split_log
 
     if fileName is None:
@@ -92,8 +151,9 @@ def main():
                 minLat = np.min((msg.to_dict()['Lat'], minLat))
                 minLon = np.min((msg.to_dict()['Lng'], minLon))
         elif msg.get_type() == 'CURR':
-            if int(msg.to_dict()['Curr']) > 200:
+            if int(msg.to_dict()['Curr']) > 500:
                 flying = True
+                modes.add(currentMode)
                 if prevCurr != -1:
                     timeInAir = timeInAir + int(msg.to_dict()['TimeMS']) - prevCurr
                     prevCurr = int(msg.to_dict()['TimeMS'])
@@ -119,8 +179,9 @@ def main():
                     landing_seq.append(seqNum)
                 prevCurr = -1
         elif msg.get_type() == 'MODE':
+            currentMode = mavutil.mode_mapping_acm[msg.to_dict()['ModeNum']]
             if flying:
-                modes.add(mavutil.mode_mapping_acm[msg.to_dict()['ModeNum']])
+                modes.add(currentMode)
         elif msg.get_type() == 'ERR':
             errors.append(msg)
         seqNum = seqNum + 1
@@ -134,32 +195,38 @@ def main():
     for i in modes:
         print(i)
 
+    print('Errors: %d' % len(errors))
+    for error in errors:
+        print('        %s' % (decodeError(error.to_dict()['Subsys'], error.to_dict()['ECode'])))
 
     readmeFile = open(readmeName, 'w')
-    readmeFile.write('Pilot: \n')
-    readmeFile.write('Certificate #: \n')
-    readmeFile.write('Aircraft Registration: \n')
-    readmeFile.write('Flight Operations Area: %3.8f, %3.8f x %3.8f, %3.8f\n' % (maxLat, maxLon, minLat, minLon))
-    readmeFile.write('Time In Air: %.2f\n' % timeInAir)
+    readmeFile.write('Pilot: %s\n' % pilotname)
+    readmeFile.write('Certificate #: %s\n' % pilotcert)
+    readmeFile.write('Aircraft Registration: %s\n' % acftreg)
+    if len(takeoff_times) != 0:
+        readmeFile.write('Flight Operations Area: %3.8f, %3.8f x %3.8f, %3.8f\n' % (maxLat, maxLon, minLat, minLon))
+        readmeFile.write('Time In Air: %.2f\n' % timeInAir)
 
     readmeFile.write('Takeoffs: %d\n' % len(takeoff_times))
     for i in takeoff_times:
         readmeFile.write('          %s UTC\n' % i.strftime('%Y-%m-%d %H:%M:%S'))
-        
+
     if takeoffWithoutGPS != 0:
         readmeFile.write("Takeoffs without GPS: %d\n" % takeoffWithoutGPS)
 
-    readmeFile.write('Flight Modes: ')
-    for i in modes:
-        readmeFile.write('%s, ' % i)
-    readmeFile.write('\n')
+    if len(takeoff_times) != 0:
+        readmeFile.write('Flight Modes: ')
+        for i in modes:
+            readmeFile.write('%s, ' % i)
+        readmeFile.write('\n')
+
     readmeFile.write('Errors: ')
     if len(errors) == 0:
         readmeFile.write('None\n')
     else:
         readmeFile.write('%d\n' % len(errors))
         for error in errors:
-            readmeFile.write('        %d %d\n' % (error.to_dict()['Subsys'], error.to_dict()['ECode']))
+            readmeFile.write('        %s\n' % (decodeError(error.to_dict()['Subsys'], error.to_dict()['ECode'])))
     readmeFile.close()
 
 
