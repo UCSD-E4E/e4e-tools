@@ -86,9 +86,6 @@ def main():
             'Flight Log Analyzer')
     parser.add_argument('-i', '--input', help = 'Input flight log',
             metavar = 'log', dest = 'log', default = None)
-    parser.add_argument('-s', '--split_log', action = 'store_true',
-            help = 'If present, split log into individual flights',
-            dest = 'split_log')
     parser.add_argument('-p', '--pilot', default = '', help = 'Pilot Name')
     parser.add_argument('-C', '--certificate', default = '', help = 'Pilot Certificate')
     parser.add_argument('-R', '--registration', default = '', help = 'Aircraft Registration')
@@ -98,7 +95,6 @@ def main():
     pilotname = args.pilot
     pilotcert = args.certificate
     acftreg = args.registration
-    split_log = args.split_log
 
     if fileName is None:
         # fix
@@ -228,7 +224,6 @@ def main():
         for error in errors:
             readmeFile.write('        %s\n' % (decodeError(error.to_dict()['Subsys'], error.to_dict()['ECode'])))
     readmeFile.close()
-
 
 if __name__ == '__main__':
     main()
