@@ -100,7 +100,7 @@ def main():
         # fix
         return
     else:
-        if os.path.splitext(os.path.basename(fileName))[1].lower() != '.bin':
+        if os.path.splitext(os.path.basename(fileName))[1].lower() not in ['.bin', '.log', '.tlog', '.px4log']:
             print("Error: Input .bin files only!")
             return
 
