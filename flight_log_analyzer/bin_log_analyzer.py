@@ -6,6 +6,7 @@ import argparse
 import numpy as np
 import os
 import datetime
+from enum import Enum
 
 def leap(date):
     """
@@ -81,6 +82,11 @@ def decodeError(subsys, ecode):
 
     return 'Unknown Error'
 
+class ACFT(Enum):
+    UNKNOWN = -1
+    SOLO    = 0
+    PX4     = 1
+
 def main():
     parser = argparse.ArgumentParser(description = 'E4E Ardupilot Autopilot '
             'Flight Log Analyzer')
@@ -123,6 +129,7 @@ def main():
     errors = []
     lastGPS = -1
     takeoffWithoutGPS = 0
+    acft = ACFT.UNKNOWN
 
     mav_master = mavutil.mavlink_connection(fileName)
     while True:
@@ -137,9 +144,15 @@ def main():
             pass
         elif msg.get_type() == 'GPS':
             if msg.to_dict()['Status'] >= 3:
-                gps_time = int(msg.to_dict()['TimeMS'])
-                gps_week = int(msg.to_dict()['Week'])
-                apm_time = int(msg.to_dict()['T'])
+                if acft == ACFT.SOLO:
+                    gps_time = int(msg.to_dict()['TimeMS'])
+                    gps_week = int(msg.to_dict()['Week'])
+                    apm_time = int(msg.to_dict()['T'])
+                elif acft == ACFT.PX4:
+                    gps_time = int(msg.to_dict()['GMS'])
+                    gps_week = int(msg.to_dict()['GWk'])
+                    apm_time = int(msg.to_dict()['TimeUS']) / 1e3
+                    
                 offset = gps_time - apm_time
                 lastGPS = seqNum
                 maxLat = np.max((msg.to_dict()['Lat'], maxLat))
@@ -150,11 +163,17 @@ def main():
             if int(msg.to_dict()['Curr']) > 500:
                 flying = True
                 modes.add(currentMode)
+                
+                if acft == ACFT.SOLO:
+                    msgtimestamp = int(msg.to_dict()['TimeMS'])
+                elif acft == ACFT.PX4:
+                    msgtimestamp = int(msg.to_dict()['TimeUS']) / 1e3
+
                 if prevCurr != -1:
-                    timeInAir = timeInAir + int(msg.to_dict()['TimeMS']) - prevCurr
-                    prevCurr = int(msg.to_dict()['TimeMS'])
+                    timeInAir = timeInAir + msgtimestamp - prevCurr
+                    prevCurr = msgtimestamp
                 else:
-                    prevCurr = int(msg.to_dict()['TimeMS'])
+                    prevCurr = msgtimestamp
                     if lastGPS != -1:
                         secs_in_week = 604800
                         gps_epoch = datetime.datetime(1980, 1, 6, 0, 0, 0)
@@ -180,6 +199,12 @@ def main():
                 modes.add(currentMode)
         elif msg.get_type() == 'ERR':
             errors.append(msg)
+        elif msg.get_type() == 'MSG':
+            version = msg.to_dict()['Message'].split()[1]
+            if version == 'solo-1.3.1':
+                acft = ACFT.SOLO
+            elif version == 'V3.3.3':
+                acft = ACFT.PX4
         seqNum = seqNum + 1
     print('')
     timeInAir = timeInAir / 1e3 / 60 / 60
