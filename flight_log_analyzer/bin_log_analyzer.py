@@ -87,28 +87,7 @@ class ACFT(Enum):
     SOLO    = 0
     PX4     = 1
 
-def main():
-    parser = argparse.ArgumentParser(description = 'E4E Ardupilot Autopilot '
-            'Flight Log Analyzer')
-    parser.add_argument('-i', '--input', help = 'Input flight log',
-            metavar = 'log', dest = 'log', default = None)
-    parser.add_argument('-p', '--pilot', default = '', help = 'Pilot Name')
-    parser.add_argument('-C', '--certificate', default = '', help = 'Pilot Certificate')
-    parser.add_argument('-R', '--registration', default = '', help = 'Aircraft Registration')
-
-    args = parser.parse_args()
-    fileName = args.log
-    pilotname = args.pilot
-    pilotcert = args.certificate
-    acftreg = args.registration
-
-    if fileName is None:
-        # fix
-        return
-    else:
-        if os.path.splitext(os.path.basename(fileName))[1].lower() not in ['.bin', '.log', '.tlog', '.px4log']:
-            print("Error: Input .bin files only!")
-            return
+def analyzeFlightLog(fileName, pilotname, pilotcert, acftreg):
 
     readmeName = os.path.splitext(fileName)[0] + '.rpt'
 
@@ -182,11 +161,11 @@ def main():
                             offset) / 1e3))
                         date = (date_before_leaps - datetime.timedelta(seconds = 
                             leap(date_before_leaps)))
-                        print("Takeoff at %s UTC" % (date.strftime('%Y-%m-%d %H:%M:%S')))
+                        # print("Takeoff at %s UTC" % (date.strftime('%Y-%m-%d %H:%M:%S')))
                         takeoff_seq.append(lastGPS)
                         takeoff_times.append(date)
                     else:
-                        print("Takeoff without GPS fix!")
+                        # print("Takeoff without GPS fix!")
                         takeoffWithoutGPS = takeoffWithoutGPS + 1
             else:
                 flying = False
@@ -206,19 +185,8 @@ def main():
             elif version == 'V3.3.3':
                 acft = ACFT.PX4
         seqNum = seqNum + 1
-    print('')
     timeInAir = timeInAir / 1e3 / 60 / 60
-    print('Time In Air: %.2f' % timeInAir)
-
-    print("Flight Area: %.6f, %.6f x %.6f, %.6f" % (maxLat, maxLon, minLat, minLon))
-
-    print("Flight Modes: ")
-    for i in modes:
-        print(i)
-
-    print('Errors: %d' % len(errors))
-    for error in errors:
-        print('        %s' % (decodeError(error.to_dict()['Subsys'], error.to_dict()['ECode'])))
+    
 
     readmeFile = open(readmeName, 'w')
     readmeFile.write('Pilot: %s\n' % pilotname)
@@ -249,6 +217,56 @@ def main():
         for error in errors:
             readmeFile.write('        %s\n' % (decodeError(error.to_dict()['Subsys'], error.to_dict()['ECode'])))
     readmeFile.close()
+    retval = dict()
+    retval['timeInAir'] = timeInAir
+    retval['pilotName'] = pilotname
+    retval['pilotCert'] = pilotcert
+    retval['acftReg'] = acftreg
+    retval['maxLat'] = maxLat
+    retval['maxLon'] = maxLon
+    retval['minLat'] = minLat
+    retval['minLon'] = minLon
+    retval['flightModes'] = modes
+    retval['takeoffs'] = takeoff_times
+    retval['errors'] = errors
+    return retval
+
+def main():
+    parser = argparse.ArgumentParser(description = 'E4E Ardupilot Autopilot '
+            'Flight Log Analyzer')
+    parser.add_argument('-i', '--input', help = 'Input flight log',
+            metavar = 'log', dest = 'log', default = None)
+    parser.add_argument('-p', '--pilot', default = '', help = 'Pilot Name')
+    parser.add_argument('-C', '--certificate', default = '', help = 'Pilot Certificate')
+    parser.add_argument('-R', '--registration', default = '', help = 'Aircraft Registration')
+
+    args = parser.parse_args()
+    fileName = args.log
+    pilotname = args.pilot
+    pilotcert = args.certificate
+    acftreg = args.registration
+
+    if fileName is None:
+        # fix
+        return
+    else:
+        if os.path.splitext(os.path.basename(fileName))[1].lower() not in ['.bin', '.log', '.tlog', '.px4log']:
+            print("Error: Input .bin files only!")
+            return
+
+    retval = analyzeFlightLog(fileName, pilotname, pilotcert, acftreg)
+    print('')
+    print('Time In Air: %.2f' % retval['timeInAir'])
+
+    print("Flight Area: %.6f, %.6f x %.6f, %.6f" % (retval['maxLat'], retval['maxLon'], retval['minLat'], retval['minLon']))
+
+    print("Flight Modes: ")
+    for i in retval['flightModes']:
+        print(i)
+
+    print('Errors: %d' % len(retval['errors']))
+    for error in retval['errors']:
+        print('        %s' % (decodeError(error.to_dict()['Subsys'], error.to_dict()['ECode'])))
 
 if __name__ == '__main__':
     main()
