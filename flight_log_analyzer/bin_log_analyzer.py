@@ -228,6 +228,7 @@ def analyzeFlightLog(fileName, pilotname, pilotcert, acftreg):
     retval['minLon'] = minLon
     retval['flightModes'] = modes
     retval['takeoffs'] = takeoff_times
+    retval['numTakeoffs'] = len(takeoff_times) + takeoffWithoutGPS
     retval['errors'] = errors
     return retval
 

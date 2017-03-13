@@ -27,20 +27,28 @@ def main():
     minLat = 180.0
     modes = set()
     errors = []
+    numTakeOffs = 0
+    flightLogs = set()
 
     for file in os.listdir(inputDir):
         if os.path.splitext(os.path.basename(file))[1].lower() in ['.bin', '.log', '.tlog', '.px4log']:
+            if os.path.splitext(os.path.basename(file))[0] in flightLogs:
+                continue
+            flightLogs.add(os.path.splitext(os.path.basename(file))[0])
             retval = analyzeFlightLog(os.path.join(inputDir, file), pilotname, pilotcert, acftreg)
             total_time_in_air = total_time_in_air + retval['timeInAir']
             maxLat = np.amax([maxLat, retval['maxLat']])
             maxLon = np.amax([maxLon, retval['maxLon']])
             minLon = np.amin([minLon, retval['minLon']])
             minLat = np.amin([minLat, retval['minLat']])
+            numTakeOffs = retval['numTakeoffs'] + numTakeOffs
             modes.union(retval['flightModes'])
             errors.extend(retval['errors'])
             retvals.append(retval)
+    print('%d logs analyzed'% len(flightLogs))
     print('Total Time in Air: %.2f' % total_time_in_air)
     print("Flight Area: %.6f, %.6f x %.6f, %.6f" % (retval['maxLat'], retval['maxLon'], retval['minLat'], retval['minLon']))
+    print("Takeoffs: %d" % numTakeOffs)
     print("Flight Modes: ")
     for i in modes:
         print('\t%s' % i)
