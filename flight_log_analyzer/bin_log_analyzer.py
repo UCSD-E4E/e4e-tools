@@ -104,6 +104,7 @@ def analyzeFlightLog(fileName, pilotname, pilotcert, acftreg):
     minLon = 180.0
     minLat = 180.0
     takeoff_times = []
+    landing_times = []
     flying = False
     errors = []
     lastGPS = -1
@@ -170,7 +171,19 @@ def analyzeFlightLog(fileName, pilotname, pilotcert, acftreg):
             else:
                 flying = False
                 if prevCurr != -1:
-                    landing_seq.append(seqNum)
+                    if lastGPS != -1:
+                        secs_in_week = 604800
+                        gps_epoch = datetime.datetime(1980, 1, 6, 0, 0, 0)
+                        date_before_leaps = (gps_epoch + datetime.timedelta(
+                            seconds = gps_week * secs_in_week + (prevCurr + 
+                            offset) / 1e3))
+                        date = (date_before_leaps - datetime.timedelta(seconds = 
+                            leap(date_before_leaps)))
+                        # print("Takeoff at %s UTC" % (date.strftime('%Y-%m-%d %H:%M:%S')))
+                        landing_seq.append(lastGPS)
+                        landing_times.append(date)
+                    else:
+                        landing_seq.append(seqNum)
                 prevCurr = -1
         elif msg.get_type() == 'MODE':
             currentMode = mavutil.mode_mapping_acm[msg.to_dict()['ModeNum']]
@@ -197,8 +210,8 @@ def analyzeFlightLog(fileName, pilotname, pilotcert, acftreg):
         readmeFile.write('Time In Air: %.2f\n' % timeInAir)
 
     readmeFile.write('Takeoffs: %d\n' % len(takeoff_times))
-    for i in takeoff_times:
-        readmeFile.write('          %s UTC\n' % i.strftime('%Y-%m-%d %H:%M:%S'))
+    for i in xrange(len(takeoff_times)):
+        readmeFile.write('          %s UTC\t%s UTC\n' % (takeoff_times[i].strftime('%Y-%m-%d %H:%M:%S'), landing_times[i].strftime('%Y-%m-%d %H:%M:%S')))
 
     if takeoffWithoutGPS != 0:
         readmeFile.write("Takeoffs without GPS: %d\n" % takeoffWithoutGPS)
