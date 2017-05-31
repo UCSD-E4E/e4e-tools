@@ -1,0 +1,5 @@
+#!/bin/bash
+
+mkdir logs
+scp root@10.1.1.10:/log/dataflash/* ./logs
+# pwd TjSDBkAu
