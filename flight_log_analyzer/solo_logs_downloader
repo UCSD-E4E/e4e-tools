@@ -2,5 +2,5 @@
 
 mkdir logs
 echo "TjSDBkAu"
-scp root@10.1.1.10:/log/dataflash/* ./logs -o StrictHostKeyChecking=no UserKnownHostsFile /dev/null
+scp -o StrictHostKeyChecking=no -o UserKnownHostsFile='/dev/null' root@10.1.1.10:/log/dataflash/* ./logs
 # pwd TjSDBkAu
