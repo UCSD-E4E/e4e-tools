@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from bin_log_analyzer import analyzeFlightLog
+from bin_log_analyzer import mavLog
 from bin_log_analyzer import decodeError
 import argparse
 import os
@@ -19,43 +19,88 @@ def main():
     pilotname = args.pilot
     pilotcert = args.certificate
     acftreg = args.registration
-    total_time_in_air = 0
     retvals = []
-    maxLat = -180.0
-    maxLon = -180.0
-    minLon = 180.0
-    minLat = 180.0
-    modes = set()
-    errors = []
-    numTakeOffs = 0
     flightLogs = set()
+    dates = set()
 
     for file in os.listdir(inputDir):
         if os.path.splitext(os.path.basename(file))[1].lower() in ['.bin', '.log', '.tlog', '.px4log']:
             if os.path.splitext(os.path.basename(file))[0] in flightLogs:
                 continue
             flightLogs.add(os.path.splitext(os.path.basename(file))[0])
-            retval = analyzeFlightLog(os.path.join(inputDir, file), pilotname, pilotcert, acftreg)
-            total_time_in_air = total_time_in_air + retval['timeInAir']
-            maxLat = np.amax([maxLat, retval['maxLat']])
-            maxLon = np.amax([maxLon, retval['maxLon']])
-            minLon = np.amin([minLon, retval['minLon']])
-            minLat = np.amin([minLat, retval['minLat']])
-            numTakeOffs = retval['numTakeoffs'] + numTakeOffs
-            modes.union(retval['flightModes'])
-            errors.extend(retval['errors'])
+            retval = mavLog(os.path.join(inputDir, file), pilotname, pilotcert, acftreg)
+            retval.analyze()
             retvals.append(retval)
-    print('%d logs analyzed'% len(flightLogs))
-    print('Total Time in Air: %.2f' % total_time_in_air)
-    print("Flight Area: %.6f, %.6f x %.6f, %.6f" % (retval['maxLat'], retval['maxLon'], retval['minLat'], retval['minLon']))
-    print("Takeoffs: %d" % numTakeOffs)
-    print("Flight Modes: ")
-    for i in modes:
-        print('\t%s' % i)
+            if retval.takeoff_date != None:
+                dates.add(retval.takeoff_date)
+            else:
+                retval.generate_report()
 
-    print('Errors: %d' % len(errors))
-    for error in errors:
-        print('        %s' % (decodeError(error.to_dict()['Subsys'], error.to_dict()['ECode'])))
+    for date in dates:
+        new_dir = os.path.join(inputDir, '%4d.%02d.%02d' % (date.year, date.month, date.day))
+        if not os.path.isdir(new_dir):
+            os.mkdir(new_dir)
+        print('For %s' % date.isoformat())
+        numTakeOffs = 0
+        flightCounter = 0
+        total_time_in_air = 0
+        maxLat = -180
+        maxLon = -180
+        minLon = 180
+        minLat = 180
+        modes = set()
+        errors = []
+        for flight_log in retvals:
+            if date == flight_log.takeoff_date:
+                flightCounter = flightCounter + 1
+                total_time_in_air = total_time_in_air + flight_log.timeInAir
+                maxLat = np.amax([maxLat, flight_log.maxLat])
+                maxLon = np.amax([maxLon, flight_log.maxLon])
+                minLon = np.amin([minLon, flight_log.minLon])
+                minLat = np.amin([minLat, flight_log.minLat])
+                numTakeOffs = len(flight_log.takeoff_times) + numTakeOffs
+
+                modes.union(flight_log.modes)
+                errors.extend(flight_log.errors)
+                flight_log.generate_report(os.path.join(new_dir, str(flight_log.log_number) + '.rpt'))
+                os.rename(os.path.join(inputDir, str(flight_log.log_number) + '.BIN'), os.path.join(new_dir, str(flight_log.log_number) + '.BIN'))
+        print('    %d logs analyzed' % flightCounter)
+        print('    Total Time in Air: %.2f' % total_time_in_air)
+        print("    Flight Area: %.2f, %.2f" % ((maxLat + minLat) / 2, (maxLon + minLon) / 2))
+        print("    Takeoffs: %d" % numTakeOffs)
+        print("    Flight Modes: ")
+        for i in modes:
+            print('\t\t%s' % i)
+
+        print('    Errors: %d' % len(errors))
+        for error in errors:
+            print('            %s' % (decodeError(error.to_dict()['Subsys'], error.to_dict()['ECode'])))
+        dir_rpt_name = os.path.join(new_dir, date.isoformat() + '.rpt')
+        dir_rpt = open(dir_rpt_name, 'w')
+        dir_rpt.write('Pilot: %s\n' % pilotname)
+        dir_rpt.write('Certificate #: %s\n' % pilotcert)
+        dir_rpt.write('Aircraft Registration: %s\n' % acftreg)
+        if total_time_in_air != 0:
+            dir_rpt.write('Flight Operations Area: %3.2f, %3.2f\n' % ((maxLat + minLat) / 2, (maxLon + minLon) / 2))
+            dir_rpt.write('Time In Air: %.2f\n' % total_time_in_air)
+        dir_rpt.write('Takeoffs: %d\n' % numTakeOffs)
+
+        if numTakeOffs != 0:
+            dir_rpt.write('Flight Modes: ')
+            for i in modes:
+                dir_rpt.write('%s, ' % i)
+            dir_rpt.write('\n')
+
+        dir_rpt.write('Errors: ')
+        if len(errors) == 0:
+            dir_rpt.write('None\n')
+        else:
+            dir_rpt.write('%d\n' % len(errors))
+            for error in errors:
+                dir_rpt.write('        %s\n' % (decodeError(error.to_dict()['Subsys'], error.to_dict()['ECode'])))
+        dir_rpt.close()
+
+
 
 
 if __name__ == '__main__':
