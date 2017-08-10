@@ -9,4 +9,8 @@ To use these rules files, run
 then 
 'sudo udevadm control --reload-rules'.
 
+Use 10-rct_store.rules to execute a shell script upon insertion of an external 
+storage unit.  If the storage unit enumerates the same every time (i.e. 
+`/dev/mmcblk0` or `/dev/sde`), then simply replace the device name.  You can 
+use the shell script to statically mount the drive somewhere.
 *****************
