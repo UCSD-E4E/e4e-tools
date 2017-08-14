@@ -2,8 +2,8 @@
 
 mkdir logs
 echo "TjSDBkAu"
-ssh-copy-id root@10.1.1.10
-latestfiles=`ssh root@10.1.1.10 find /log/dataflash -mtime -1 -type f`
+ssh-copy-id -o StrictHostKeyChecking=no root@10.1.1.10
+latestfiles=`ssh -o StrictHostKeyChecking=no root@10.1.1.10 find /log/dataflash -mtime -1 -type f`
 for i in $latestfiles
 do
 	scp -o StrictHostKeyChecking=no -o UserKnownHostsFile='/dev/null' root@10.1.1.10:$i ./logs
