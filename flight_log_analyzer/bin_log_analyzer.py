@@ -233,7 +233,7 @@ class mavLog:
         readmeFile.write('Certificate #: %s\n' % self.pilot_certificate)
         readmeFile.write('Aircraft Registration: %s\n' % self.aircraft_registration)
         if len(self.takeoff_times) != 0:
-            readmeFile.write('Flight Operations Area: %3.8f, %3.8f x %3.8f, %3.8f\n' % (self.maxLat, self.maxLon, self.minLat, self.minLon))
+            readmeFile.write('Flight Operations Area: %3.3f, %3.3f\n' % ((self.maxLat + self.minLat) / 2, (self.maxLon + self.minLon) / 2))
             readmeFile.write('Time In Air: %.2f\n' % self.timeInAir)
 
         readmeFile.write('Takeoffs: %d\n' % len(self.takeoff_times))
