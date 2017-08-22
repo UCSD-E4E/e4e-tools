@@ -13,12 +13,14 @@ def main():
     parser.add_argument('-p', '--pilot', default = '', help = 'Pilot Name')
     parser.add_argument('-C', '--certificate', default = '', help = 'Pilot Certificate')
     parser.add_argument('-R', '--registration', default = '', help = 'Aircraft Registration')
+    parser.add_argument('-nd', '--no_directory', action = 'store_false', help='Directory Sorting Flag', dest='date_sort')
 
     args = parser.parse_args()
     inputDir = args.dir
     pilotname = args.pilot
     pilotcert = args.certificate
     acftreg = args.registration
+    date_sort = args.date_sort
     retvals = []
     flightLogs = set()
     dates = set()
@@ -37,9 +39,12 @@ def main():
                 retval.generate_report()
 
     for date in dates:
-        new_dir = os.path.join(inputDir, '%4d.%02d.%02d' % (date.year, date.month, date.day))
-        if not os.path.isdir(new_dir):
-            os.mkdir(new_dir)
+        if date_sort:
+            new_dir = os.path.join(inputDir, '%4d.%02d.%02d' % (date.year, date.month, date.day))
+            if not os.path.isdir(new_dir):
+                os.mkdir(new_dir)
+        else:
+            new_dir = inputDir
         print('For %s' % date.isoformat())
         numTakeOffs = 0
         flightCounter = 0
@@ -63,7 +68,8 @@ def main():
                 modes.union(flight_log.modes)
                 errors.extend(flight_log.errors)
                 flight_log.generate_report(os.path.join(new_dir, str(flight_log.log_number) + '.rpt'))
-                os.rename(os.path.join(inputDir, str(flight_log.log_number) + '.BIN'), os.path.join(new_dir, str(flight_log.log_number) + '.BIN'))
+                if date_sort:
+                    os.rename(os.path.join(inputDir, str(flight_log.log_number) + '.BIN'), os.path.join(new_dir, str(flight_log.log_number) + '.BIN'))
         print('    %d logs analyzed' % flightCounter)
         print('    Total Time in Air: %.2f' % total_time_in_air)
         print("    Flight Area: %.2f, %.2f" % ((maxLat + minLat) / 2, (maxLon + minLon) / 2))
@@ -75,6 +81,7 @@ def main():
         print('    Errors: %d' % len(errors))
         for error in errors:
             print('            %s' % (decodeError(error.to_dict()['Subsys'], error.to_dict()['ECode'])))
+            
         dir_rpt_name = os.path.join(new_dir, date.isoformat() + '.rpt')
         dir_rpt = open(dir_rpt_name, 'w')
         dir_rpt.write('Pilot: %s\n' % pilotname)
