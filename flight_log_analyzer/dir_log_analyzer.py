@@ -69,9 +69,11 @@ def main():
                 errors.extend(flight_log.errors)
                 flight_log.generate_report(os.path.join(new_dir, str(flight_log.log_number) + '.rpt'))
                 if date_sort:
-                    os.rename(os.path.join(inputDir, str(flight_log.log_number) + '.BIN'), os.path.join(new_dir, str(flight_log.log_number) + '.BIN'))
+                    newPath = os.path.join(new_dir, str(flight_log.log_number) + flight_log.log_type)
+                    oldPath = os.path.join(inputDir, str(flight_log.log_number) + flight_log.log_type)
+                    os.rename(oldPath, newPath)
         print('    %d logs analyzed' % flightCounter)
-        print('    Total Time in Air: %.2f' % total_time_in_air)
+        print('    Total Time in Air: %.2f min' % (total_time_in_air * 60))
         print("    Flight Area: %.2f, %.2f" % ((maxLat + minLat) / 2, (maxLon + minLon) / 2))
         print("    Takeoffs: %d" % numTakeOffs)
         print("    Flight Modes: ")
@@ -89,7 +91,7 @@ def main():
         dir_rpt.write('Aircraft Registration: %s\n' % acftreg)
         if total_time_in_air != 0:
             dir_rpt.write('Flight Operations Area: %3.2f, %3.2f\n' % ((maxLat + minLat) / 2, (maxLon + minLon) / 2))
-            dir_rpt.write('Time In Air: %.2f\n' % total_time_in_air)
+            dir_rpt.write('Time In Air: %.2f hr\n' % total_time_in_air)
         dir_rpt.write('Takeoffs: %d\n' % numTakeOffs)
 
         if numTakeOffs != 0:
