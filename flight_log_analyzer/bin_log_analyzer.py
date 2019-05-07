@@ -108,6 +108,7 @@ class mavLog:
             self.report_fname = os.path.splitext(log_filename)[0] + '.rpt'
         else:
             self.report_fname = report_file
+        self.log_type = os.path.splitext(log_filename)[1]
 
     def analyze(self):
         self.timeInAir = 0
@@ -218,6 +219,12 @@ class mavLog:
                     self.acft = ACFT.PX4
             seqNum = seqNum + 1
         self.timeInAir = self.timeInAir / 1e3 / 60 / 60
+        # Fix TO times
+        TOremove = []
+        for i in xrange(len(self.takeoff_times) - 1):
+            if self.takeoff_times[i+1] == self.landing_times[i]:
+                TOremove.append(i)
+
         if len(self.takeoff_times) == 0:
             self.takeoff_date = None
         else:
