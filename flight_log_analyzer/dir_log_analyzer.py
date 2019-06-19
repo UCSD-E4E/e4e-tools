@@ -4,6 +4,8 @@ from bin_log_analyzer import decodeError
 import argparse
 import os
 import numpy as np
+import glob
+import itertools
 
 def main():
     parser = argparse.ArgumentParser(description = 'E4E Ardupilot Autopilot '
@@ -25,8 +27,10 @@ def main():
     flightLogs = set()
     dates = set()
 
+    exts = ['.bin', '.log', '.tlog', '.px4log', '.BIN']
+
     for file in os.listdir(inputDir):
-        if os.path.splitext(os.path.basename(file))[1].lower() in ['.bin', '.log', '.tlog', '.px4log']:
+        if os.path.splitext(os.path.basename(file))[1] in exts:
             if os.path.splitext(os.path.basename(file))[0] in flightLogs:
                 continue
             flightLogs.add(os.path.splitext(os.path.basename(file))[0])
@@ -108,8 +112,15 @@ def main():
             for error in errors:
                 dir_rpt.write('        %s\n' % (decodeError(error.to_dict()['Subsys'], error.to_dict()['ECode'])))
         dir_rpt.close()
-
-
+    # clean up logs
+    exts += '.rpt'
+    regex = [os.path.join(inputDir, '*%s' % ext) for ext in exts]
+    no_date_logs = list(itertools.chain.from_iterable([glob.glob(expr) for expr in regex]))
+    no_date_dir = os.path.join(inputDir, 'no_date')
+    if not os.path.isdir(no_date_dir):
+        os.mkdir(no_date_dir)
+    for log in no_date_logs:
+        os.rename(log, os.path.join(no_date_dir, os.path.basename(log)))
 
 
 if __name__ == '__main__':
