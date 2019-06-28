@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 from bin_log_analyzer import mavLog
 from bin_log_analyzer import decodeError
 import argparse
@@ -6,6 +6,8 @@ import os
 import numpy as np
 import glob
 import itertools
+from datetime import datetime
+import time
 
 def main():
     parser = argparse.ArgumentParser(description = 'E4E Ardupilot Autopilot '
@@ -59,27 +61,48 @@ def main():
         minLat = 180
         modes = set()
         errors = []
+        to_times = []
+        ld_times = []
         for flight_log in retvals:
             if date == flight_log.takeoff_date:
                 flightCounter = flightCounter + 1
-                total_time_in_air = total_time_in_air + flight_log.timeInAir
+                total_time_in_air = total_time_in_air + flight_log.timeInAir_hr
                 maxLat = np.amax([maxLat, flight_log.maxLat])
                 maxLon = np.amax([maxLon, flight_log.maxLon])
                 minLon = np.amin([minLon, flight_log.minLon])
                 minLat = np.amin([minLat, flight_log.minLat])
                 numTakeOffs = len(flight_log.takeoff_times) + numTakeOffs
+                to_times.extend(flight_log.takeoff_times)
+                ld_times.extend(flight_log.landing_times)
+                assert(len(to_times) == len(ld_times))
 
-                modes.union(flight_log.modes)
+                modes = modes.union(flight_log.modes)
                 errors.extend(flight_log.errors)
                 flight_log.generate_report(os.path.join(new_dir, str(flight_log.log_number) + '.rpt'))
                 if date_sort:
                     newPath = os.path.join(new_dir, str(flight_log.log_number) + flight_log.log_type)
                     oldPath = os.path.join(inputDir, str(flight_log.log_number) + flight_log.log_type)
-                    os.rename(oldPath, newPath)
+                    try:
+                        os.rename(oldPath, newPath)
+                    except OSError:
+                        print("Failed to move %s to %s" % (oldPath, newPath))
+            elif flight_log.takeoff_date is not None:
+                print("Date mismatch!")
+                print(date)
+                print(flight_log.takeoff_date)
+
+        to_times.sort()
+        ld_times.sort()
+
         print('    %d logs analyzed' % flightCounter)
         print('    Total Time in Air: %.2f min' % (total_time_in_air * 60))
         print("    Flight Area: %.2f, %.2f" % ((maxLat + minLat) / 2, (maxLon + minLon) / 2))
         print("    Takeoffs: %d" % numTakeOffs)
+        for i in range(numTakeOffs):
+            start_time = time.mktime(to_times[i].timetuple())
+            stop_time = time.mktime(ld_times[i].timetuple())
+            duration = (stop_time - start_time) / 60
+            print('          %s UTC\t%s UTC    %d min' % (to_times[i].strftime('%Y-%m-%d %H:%M:%S'), ld_times[i].strftime('%Y-%m-%d %H:%M:%S'), int(duration)))
         print("    Flight Modes: ")
         for i in modes:
             print('\t\t%s' % i)
@@ -97,7 +120,12 @@ def main():
             dir_rpt.write('Flight Operations Area: %3.2f, %3.2f\n' % ((maxLat + minLat) / 2, (maxLon + minLon) / 2))
             dir_rpt.write('Time In Air: %.2f hr\n' % total_time_in_air)
         dir_rpt.write('Takeoffs: %d\n' % numTakeOffs)
-
+        for i in range(numTakeOffs):
+            start_time = time.mktime(to_times[i].timetuple())
+            stop_time = time.mktime(ld_times[i].timetuple())
+            duration = (stop_time - start_time) / 60
+            dir_rpt.write('          %s UTC\t%s UTC    %d min\n' % (to_times[i].strftime('%Y-%m-%d %H:%M:%S'), ld_times[i].strftime('%Y-%m-%d %H:%M:%S'), int(duration)))
+        
         if numTakeOffs != 0:
             dir_rpt.write('Flight Modes: ')
             for i in modes:
@@ -119,8 +147,9 @@ def main():
     no_date_dir = os.path.join(inputDir, 'no_date')
     if not os.path.isdir(no_date_dir):
         os.mkdir(no_date_dir)
-    for log in no_date_logs:
-        os.rename(log, os.path.join(no_date_dir, os.path.basename(log)))
+    if date_sort:
+        for log in no_date_logs:
+            os.rename(log, os.path.join(no_date_dir, os.path.basename(log)))
 
 
 if __name__ == '__main__':

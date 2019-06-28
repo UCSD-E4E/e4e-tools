@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 from pymavlink import mavutil
 from pymavlink.dialects.v10 import ardupilotmega as mavlink
@@ -9,13 +9,14 @@ import datetime
 from enum import Enum
 import pytz
 from dateutil.tz import tzlocal
-
+import time
 
 
 class ACFT(Enum):
-    UNKNOWN = -1
-    SOLO    = 0
-    PX4     = 1
+    UNKNOWN   = -1
+    SOLO      = 0
+    PX4       = 1
+    PX4_3_6_9 = 2
 
 def leap(date):
     """
@@ -31,9 +32,9 @@ def leap(date):
                  (1994, 6, 30), (1995, 12, 31), (1997, 6, 30),
                  (1998, 12, 31), (2005, 12, 31), (2008, 12, 31),
                  (2012, 6, 30), (2015, 6, 30), (2016, 12, 31)]
-    leap_dates = map(lambda x: datetime.datetime(x[0], x[1], x[2], 23, 59, 59),
-                     leap_list)
-    for j in xrange(len(leap_dates[:-1])):
+    leap_dates = list(map(lambda x: datetime.datetime(x[0], x[1], x[2], 23, 59, 59),
+                     leap_list))
+    for j in range(len(leap_dates[:-1])):
         if leap_dates[j] < date < leap_dates[j + 1]:
             return j + 1
     return len(leap_dates)
@@ -111,7 +112,7 @@ class mavLog:
         self.log_type = os.path.splitext(log_filename)[1]
 
     def analyze(self):
-        self.timeInAir = 0
+        self.timeInAir_s = 0
         FMT = []
         self.PARAM = []
         self.modes = set()
@@ -130,8 +131,51 @@ class mavLog:
         prevCurr = -1
         flying = False
         lastGPS = -1
+        offset = 0
+        solo_timestamp = 0
+
+        gotType = False
 
         mav_master = self.mav_master
+
+        while True:
+            msg = mav_master.recv_match(blocking = False)
+            if msg is None:
+                break
+            elif msg.get_type() == 'MSG' and gotType == False:
+                version = msg.to_dict()['Message'].split()[1]
+                if version == 'solo-1.3.1':
+                    self.acft = ACFT.SOLO
+                    # print("This is a 3DR Solo")
+                    gotType = True
+                elif version == 'V3.3.3':
+                    self.acft = ACFT.PX4
+                    # print("This is a V3.3.3 PixHawk")
+                    gotType = True
+                elif version == 'V3.6.9':
+                    self.acft = ACFT.PX4
+                    # print("This is a V3.6.9 PixHawk")
+                    gotType = True
+                else:
+                    print("Unknown Version! %s" % (version))
+                    return
+            elif msg.get_type() == 'GPS' and gotType == True:
+                if msg.to_dict()['Status'] >= 3:
+                    if self.acft == ACFT.SOLO:
+                        gps_time = int(msg.to_dict()['TimeMS'])
+                        gps_week = int(msg.to_dict()['Week'])
+                        apm_time = int(msg.to_dict()['T'])
+                    elif self.acft == ACFT.PX4:
+                        gps_time = int(msg.to_dict()['GMS'])
+                        gps_week = int(msg.to_dict()['GWk'])
+                        apm_time = int(msg.to_dict()['TimeUS']) / 1e3
+                    elif self.acft == ACFT.PX4_3_6_9:
+                        gps_time = int(msg.to_dict()['GMS'])
+                        gps_week = int(msg.to_dict()['GWk'])
+                        apm_time = int(msg.to_dict()['TimeUS']) / 1e3
+                    offset = gps_time - apm_time
+
+        mav_master.rewind()
         while True:
             msg = mav_master.recv_match(blocking = False)
             if msg is None:
@@ -146,85 +190,63 @@ class mavLog:
                 if msg.to_dict()['Status'] >= 3:
                     if self.acft == ACFT.SOLO:
                         gps_time = int(msg.to_dict()['TimeMS'])
+                        solo_timestamp = (int(msg.to_dict()['TimeMS'])) / 1e3
                         gps_week = int(msg.to_dict()['Week'])
                         apm_time = int(msg.to_dict()['T'])
                     elif self.acft == ACFT.PX4:
                         gps_time = int(msg.to_dict()['GMS'])
                         gps_week = int(msg.to_dict()['GWk'])
                         apm_time = int(msg.to_dict()['TimeUS']) / 1e3
-                        
+                    elif self.acft == ACFT.PX4_3_6_9:
+                        gps_time = int(msg.to_dict()['GMS'])
+                        gps_week = int(msg.to_dict()['GWk'])
+                        apm_time = int(msg.to_dict()['TimeUS']) / 1e3
+                    else:
+                        print("Unknown Aircraft, failure in GPS! %d" % self.log_number)
+                        return
+
                     offset = gps_time - apm_time
                     lastGPS = seqNum
                     self.maxLat = np.max((msg.to_dict()['Lat'], self.maxLat))
                     self.maxLon = np.max((msg.to_dict()['Lng'], self.maxLon))
                     self.minLat = np.min((msg.to_dict()['Lat'], self.minLat))
                     self.minLon = np.min((msg.to_dict()['Lng'], self.minLon))
-            elif msg.get_type() == 'CURR':
-                if int(msg.to_dict()['Curr']) > 500:
-                    flying = True
-                    self.modes.add(currentMode)
-                    
-                    if self.acft == ACFT.SOLO:
-                        msgtimestamp = int(msg.to_dict()['TimeMS'])
-                    elif self.acft == ACFT.PX4:
-                        msgtimestamp = int(msg.to_dict()['TimeUS']) / 1e3
+            
+            elif msg.get_type() == 'EV':
+                if self.acft == ACFT.SOLO:
+                    msgtimestamp = solo_timestamp
+                elif self.acft == ACFT.PX4:
+                    msgtimestamp = (int(msg.to_dict()['TimeUS']) / 1e3 + offset) / 1e3
+                elif self.acft == ACFT.PX4_3_6_9:
+                    msgtimestamp = (int(msg.to_dict()['TimeUS']) / 1e3 + offset) / 1e3
+                secs_in_week = 604800
+                gps_epoch = datetime.datetime(1980, 1, 6, 0, 0, 0)
+                date_before_leaps = (gps_epoch + datetime.timedelta(seconds = gps_week * secs_in_week + msgtimestamp))
+                date = (date_before_leaps - datetime.timedelta(seconds = 
+                                leap(date_before_leaps)))
 
-                    if prevCurr != -1:
-                        self.timeInAir = self.timeInAir + msgtimestamp - prevCurr
-                        prevCurr = msgtimestamp
-                    else:
-                        prevCurr = msgtimestamp
-                        if lastGPS != -1:
-                            secs_in_week = 604800
-                            gps_epoch = datetime.datetime(1980, 1, 6, 0, 0, 0)
-                            date_before_leaps = (gps_epoch + datetime.timedelta(
-                                seconds = gps_week * secs_in_week + (prevCurr + 
-                                offset) / 1e3))
-                            date = (date_before_leaps - datetime.timedelta(seconds = 
-                                leap(date_before_leaps)))
-                            # print("Takeoff at %s UTC" % (date.strftime('%Y-%m-%d %H:%M:%S')))
-                            takeoff_seq.append(lastGPS)
-                            self.takeoff_times.append(date)
-                        else:
-                            # print("Takeoff without GPS fix!")
-                            takeoffWithoutGPS = takeoffWithoutGPS + 1
-                else:
+                if msg.to_dict()['Id'] == 10:
+                    flying = True
+                    prevCurr = msgtimestamp
+                    # print("Takeoff at %s UTC" % (date.strftime('%Y-%m-%d %H:%M:%S')))
+                    takeoff_seq.append(lastGPS)
+                    self.takeoff_times.append(date)
+                elif msg.to_dict()['Id'] == 11:
                     flying = False
-                    if prevCurr != -1:
-                        if lastGPS != -1:
-                            secs_in_week = 604800
-                            gps_epoch = datetime.datetime(1980, 1, 6, 0, 0, 0)
-                            date_before_leaps = (gps_epoch + datetime.timedelta(
-                                seconds = gps_week * secs_in_week + (prevCurr + 
-                                offset) / 1e3))
-                            date = (date_before_leaps - datetime.timedelta(seconds = 
-                                leap(date_before_leaps)))
-                            # print("Takeoff at %s UTC" % (date.strftime('%Y-%m-%d %H:%M:%S')))
-                            landing_seq.append(lastGPS)
-                            self.landing_times.append(date)
-                        else:
-                            landing_seq.append(seqNum)
+                    self.timeInAir_s += msgtimestamp - prevCurr
                     prevCurr = -1
+                    # print("Landing at %s UTC" % (date.strftime('%Y-%m-%d %H:%M:%S')))
+                    landing_seq.append(lastGPS)
+                    self.landing_times.append(date)
             elif msg.get_type() == 'MODE':
                 currentMode = mavutil.mode_mapping_acm[msg.to_dict()['ModeNum']]
                 if flying:
                     self.modes.add(currentMode)
             elif msg.get_type() == 'ERR':
                 self.errors.append(msg)
-            elif msg.get_type() == 'MSG':
-                version = msg.to_dict()['Message'].split()[1]
-                if version == 'solo-1.3.1':
-                    self.acft = ACFT.SOLO
-                elif version == 'V3.3.3':
-                    self.acft = ACFT.PX4
             seqNum = seqNum + 1
-        self.timeInAir = self.timeInAir / 1e3 / 60 / 60
-        # Fix TO times
-        TOremove = []
-        for i in xrange(len(self.takeoff_times) - 1):
-            if self.takeoff_times[i+1] == self.landing_times[i]:
-                TOremove.append(i)
-
+        self.timeInAir_hr = self.timeInAir_s / 60 / 60
+        
         if len(self.takeoff_times) == 0:
             self.takeoff_date = None
         else:
@@ -241,11 +263,14 @@ class mavLog:
         readmeFile.write('Aircraft Registration: %s\n' % self.aircraft_registration)
         if len(self.takeoff_times) != 0:
             readmeFile.write('Flight Operations Area: %3.3f, %3.3f\n' % ((self.maxLat + self.minLat) / 2, (self.maxLon + self.minLon) / 2))
-            readmeFile.write('Time In Air: %.2f\n' % self.timeInAir)
+            readmeFile.write('Time In Air: %.2f min\n' % (self.timeInAir_s / 60))
 
         readmeFile.write('Takeoffs: %d\n' % len(self.takeoff_times))
-        for i in xrange(len(self.takeoff_times)):
-            readmeFile.write('          %s UTC\t%s UTC\n' % (self.takeoff_times[i].strftime('%Y-%m-%d %H:%M:%S'), self.landing_times[i].strftime('%Y-%m-%d %H:%M:%S')))
+        for i in range(len(self.takeoff_times)):
+            start_time = time.mktime(self.takeoff_times[i].timetuple())
+            stop_time = time.mktime(self.landing_times[i].timetuple())
+            duration = (stop_time - start_time) / 60
+            readmeFile.write('          %s UTC\t%s UTC    %d min\n' % (self.takeoff_times[i].strftime('%Y-%m-%d %H:%M:%S'), self.landing_times[i].strftime('%Y-%m-%d %H:%M:%S'), int(duration)))
 
         if self.takeoffWithoutGPS != 0:
             readmeFile.write("Takeoffs without GPS: %d\n" % self.takeoffWithoutGPS)
@@ -273,7 +298,7 @@ def analyzeFlightLog(fileName, pilotname, pilotcert, acftreg):
     mavlog.generate_report()
 
     retval = dict()
-    retval['timeInAir'] = mavlog.timeInAir
+    retval['timeInAir_s'] = mavlog.timeInAir_s
     retval['pilotName'] = pilotname
     retval['pilotCert'] = pilotcert
     retval['acftReg'] = acftreg
@@ -312,7 +337,7 @@ def main():
 
     retval = analyzeFlightLog(fileName, pilotname, pilotcert, acftreg)
     print('')
-    print('Time In Air: %.2f' % retval['timeInAir'])
+    print('Time In Air: %.2f' % retval['timeInAir_s'])
 
     print("Flight Area: %.2f, %.2f x %.2f, %.2f" % (retval['maxLat'], retval['maxLon'], retval['minLat'], retval['minLon']))
 
