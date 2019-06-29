@@ -63,6 +63,8 @@ def main():
         errors = []
         to_times = []
         ld_times = []
+        total_cons = 0
+
         for flight_log in retvals:
             if date == flight_log.takeoff_date:
                 flightCounter = flightCounter + 1
@@ -75,21 +77,22 @@ def main():
                 to_times.extend(flight_log.takeoff_times)
                 ld_times.extend(flight_log.landing_times)
                 assert(len(to_times) == len(ld_times))
+                total_cons += flight_log.batt_cons
 
                 modes = modes.union(flight_log.modes)
                 errors.extend(flight_log.errors)
-                flight_log.generate_report(os.path.join(new_dir, str(flight_log.log_number) + '.rpt'))
+                flight_log.generate_report(os.path.join(new_dir, flight_log.log_number + '.rpt'))
                 if date_sort:
-                    newPath = os.path.join(new_dir, str(flight_log.log_number) + flight_log.log_type)
-                    oldPath = os.path.join(inputDir, str(flight_log.log_number) + flight_log.log_type)
+                    newPath = os.path.join(new_dir, flight_log.log_number + flight_log.log_type)
+                    oldPath = os.path.join(inputDir, flight_log.log_number + flight_log.log_type)
                     try:
                         os.rename(oldPath, newPath)
                     except OSError:
                         print("Failed to move %s to %s" % (oldPath, newPath))
-            elif flight_log.takeoff_date is not None:
-                print("Date mismatch!")
-                print(date)
-                print(flight_log.takeoff_date)
+            # elif flight_log.takeoff_date is not None:
+            #     print("Date mismatch!")
+            #     print(date)
+            #     print(flight_log.takeoff_date)
 
         to_times.sort()
         ld_times.sort()
@@ -110,6 +113,7 @@ def main():
         print('    Errors: %d' % len(errors))
         for error in errors:
             print('            %s' % (decodeError(error.to_dict()['Subsys'], error.to_dict()['ECode'])))
+        print("    Consumed: %.3f Ah" % (total_cons))
             
         dir_rpt_name = os.path.join(new_dir, date.isoformat() + '.rpt')
         dir_rpt = open(dir_rpt_name, 'w')
@@ -139,6 +143,7 @@ def main():
             dir_rpt.write('%d\n' % len(errors))
             for error in errors:
                 dir_rpt.write('        %s\n' % (decodeError(error.to_dict()['Subsys'], error.to_dict()['ECode'])))
+        dir_rpt.write("Consumed: %.3f Ah\n" % (total_cons))
         dir_rpt.close()
     # clean up logs
     exts += '.rpt'

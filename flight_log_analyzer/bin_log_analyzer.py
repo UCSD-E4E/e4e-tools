@@ -100,7 +100,7 @@ class mavLog:
         def __repr__(self):
             return "mavLog.MAV_PARAM(%s, %s)" % (self.name, self.value)
     def __init__(self, log_filename, pilot_name = None, pilot_cert = None, aircraft_reg = None, report_file_name = None):
-        self.log_number = int(os.path.splitext(os.path.basename(log_filename))[0])
+        self.log_number = (os.path.splitext(os.path.basename(log_filename))[0])
         self.mav_master = mavutil.mavlink_connection(log_filename)
         self.pilot = pilot_name
         self.pilot_certificate = pilot_cert
@@ -125,6 +125,7 @@ class mavLog:
         self.errors = []
         self.takeoffWithoutGPS = 0
         self.acft = ACFT.UNKNOWN
+        self.batt_cons = 0
         takeoff_seq = []
         landing_seq = []
         seqNum = 0
@@ -133,6 +134,7 @@ class mavLog:
         lastGPS = -1
         offset = 0
         solo_timestamp = 0
+        battery_usage = 0
 
         gotType = False
 
@@ -202,7 +204,7 @@ class mavLog:
                         gps_week = int(msg.to_dict()['GWk'])
                         apm_time = int(msg.to_dict()['TimeUS']) / 1e3
                     else:
-                        print("Unknown Aircraft, failure in GPS! %d" % self.log_number)
+                        print("Unknown Aircraft, failure in GPS! %s" % self.log_number)
                         return
 
                     offset = gps_time - apm_time
@@ -244,8 +246,15 @@ class mavLog:
                     self.modes.add(currentMode)
             elif msg.get_type() == 'ERR':
                 self.errors.append(msg)
+            elif msg.get_type() == 'BAT' and self.acft == ACFT.PX4:
+                if msg.to_dict()['CurrTot'] > battery_usage:
+                    battery_usage = msg.to_dict()['CurrTot']
+            elif msg.get_type() == 'CURR' and self.acft == ACFT.SOLO:
+                if msg.to_dict()['CurrTot'] > battery_usage:
+                    battery_usage = msg.to_dict()['CurrTot']
             seqNum = seqNum + 1
         self.timeInAir_hr = self.timeInAir_s / 60 / 60
+        self.batt_cons = battery_usage / 1000
         
         if len(self.takeoff_times) == 0:
             self.takeoff_date = None
@@ -288,6 +297,7 @@ class mavLog:
             readmeFile.write('%d\n' % len(self.errors))
             for error in self.errors:
                 readmeFile.write('        %s\n' % (decodeError(error.to_dict()['Subsys'], error.to_dict()['ECode'])))
+        readmeFile.write("Consumed: %.3f Ah\n" % (self.batt_cons))
         readmeFile.close()
 
 
