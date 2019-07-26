@@ -214,7 +214,7 @@ class mavLog:
                     self.minLat = np.min((msg.to_dict()['Lat'], self.minLat))
                     self.minLon = np.min((msg.to_dict()['Lng'], self.minLon))
             
-            elif msg.get_type() == 'EV':
+            elif msg.get_type() == 'EV' and lastGPS != -1:
                 if self.acft == ACFT.SOLO:
                     msgtimestamp = solo_timestamp
                 elif self.acft == ACFT.PX4:
