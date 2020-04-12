@@ -140,19 +140,19 @@ class mavLog:
 
 		ev = {'ev': [], 't': []}
 		mode = {'ModeNum': [], 't': []}
-	    gps = {'spd':[], 't':[], 'lat':[], 'lon':[], 'GMS':[], 'GWk':[]}
-        bat = {'curr':[], 'volt':[], 't':[], 'cons':[]}
-	    err = {'Sys_code':[], 't':[]}
-	    ctun = {'ThrIn':[], 'ThrOut':[], 'DesAlt':[], 'Alt':[], 'AngleBoost':[], 't':[]}
-	    mesg = {'msg':[], 't':[]}
-	    takeoffs = []
-	    landings = []
-	    params = []
+		gps = {'spd':[], 't':[], 'lat':[], 'lon':[], 'GMS':[], 'GWk':[]}
+		bat = {'curr':[], 'volt':[], 't':[], 'cons':[]}
+		err = {'Sys_code':[], 't':[]}
+		ctun = {'ThrIn':[], 'ThrOut':[], 'DesAlt':[], 'Alt':[], 'AngleBoost':[], 't':[]}
+		mesg = {'msg':[], 't':[]}
+		takeoffs = []
+		landings = []
+		params = []
 
 		mav_master = self.mav_master
 
 		# Get mav type
-		while (msg = mav_master.recv_match(blocking = False)):
+		while (msg == mav_master.recv_match(blocking = False)):
 			if msg.get_type() == 'MSG':
 				version = msg.to_dict()['Message'].split()[1]
 				if version == 'solo-1.3.1':
@@ -173,7 +173,7 @@ class mavLog:
 				break
 
 
-		while (msg = mav_master.recv_match(blocking = False)):
+		while (msg == mav_master.recv_match(blocking = False)):
 			if msg.get_type() == 'MSG':
 				mesg['msg'].append(msg.to_dict()['Message'])
 				mesg['t'].append(msg.to_dict()['TimeUS'])
