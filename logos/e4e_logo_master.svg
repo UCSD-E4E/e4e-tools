@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="6480"
+   height="2513.4546"
+   id="svg3043"
+   version="1.1"
+   inkscape:version="0.92.3 (2405546, 2018-03-11)"
+   sodipodi:docname="e4e_logo_master.svg">
+  <defs
+     id="defs3045" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.175"
+     inkscape:cx="3254.9101"
+     inkscape:cy="1994.9616"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     showguides="true"
+     inkscape:guide-bbox="true"
+     inkscape:window-width="1920"
+     inkscape:window-height="1027"
+     inkscape:window-x="1920"
+     inkscape:window-y="25"
+     inkscape:window-maximized="1"
+     units="in"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0"
+     inkscape:pagecheckerboard="true" />
+  <metadata
+     id="metadata3048">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(0,1461.0925)">
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:0%;font-family:Arial;-inkscape-font-specification:Arial;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none"
+       x="29.71582"
+       y="-622.62885"
+       id="text3799"><tspan
+         sodipodi:role="line"
+         id="tspan3801"
+         x="29.71582"
+         y="-622.62885"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:989.67272949px;line-height:1.25;font-family:Arial;-inkscape-font-specification:Arial;letter-spacing:68.72727203px;word-spacing:25.97890854px;fill:#ffffff">ENGINEERS</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:0%;font-family:'Yanone Kaffeesatz';-inkscape-font-specification:'Yanone Kaffeesatz';letter-spacing:-54.98181915px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none"
+       x="29.71582"
+       y="895.26489"
+       id="text3803"><tspan
+         sodipodi:role="line"
+         id="tspan3805"
+         x="29.71582"
+         y="895.26489"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:989.67272949px;line-height:0%;font-family:Arial;-inkscape-font-specification:Arial;letter-spacing:-54.98181915px;fill:#ffffff">EXPLORATION</tspan></text>
+    <rect
+       style="fill:#f5d318;fill-opacity:1;stroke:none"
+       id="rect2987-5"
+       width="6332.7266"
+       height="589.091"
+       x="73.636719"
+       y="-498.91071" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:12.3841095px;line-height:0%;font-family:'Yanone Kaffeesatz';-inkscape-font-specification:'Yanone Kaffeesatz';letter-spacing:0px;word-spacing:0px;fill:#1a1a1a;fill-opacity:1;stroke:#1a1a1a;stroke-width:42.55630493;stroke-miterlimit:4;stroke-dasharray:none"
+       x="2306.4026"
+       y="93.591423"
+       id="text3807"><tspan
+         sodipodi:role="line"
+         id="tspan3809"
+         x="2306.4026"
+         y="93.591423"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:865.55340576px;line-height:1.25;font-family:Arial;-inkscape-font-specification:Arial;fill:#1a1a1a;stroke:#1a1a1a;stroke-width:42.55630493;stroke-miterlimit:4;stroke-dasharray:none">FOR</tspan></text>
+  </g>
+</svg>
