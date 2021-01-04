@@ -1,0 +1,38 @@
+\RequirePackage{shellesc}
+\RequirePackage{pdftexcmds}
+\makeatletter                            % standalone knows about it
+  \let\pdfshellescape\pdf@shellescape
+\makeatother
+
+\RequirePackage{luatex85}
+\documentclass[tikz, convert={outfile=\jobname.svg}]{standalone}
+\usetikzlibrary{arrows, positioning, quotes, graphs, graphdrawing, fit, topaths}
+\usegdlibrary{force}
+\begin{document}
+	\tikz [ node distance=3cm,
+			start/.style={},
+			level/.style={draw, rectangle},
+			every edge quotes/.append style={font=\tiny, rectangle, align=left}
+	]{
+		\node	(l0)	[start]	{Initial Applicant};
+		\node	(l1)	[level, below=of l0] {Project Applicant};
+		\node	(l2)	[level, right=of l0] {General Applicant};
+		\node	(l3)	[level,	right=of l1]	{In Review};
+		\node	(l4)	[level, right=of l3]	{Decision Pending};
+		\node	(l5)	[level, right=of l4]	{Project Candidate};
+		\node	(l6)	[level, below=of l4]	{Declined};
+		\node	(l7)	[level, right=of l2]	{General Project Candidate};
+
+		\draw	(l1)	edge [stealth-, "Selected to interview\\for at least 1 project"] (l0)
+						edge [stealth-, "Selected to interview\\for at least 1 project"]	(l2)
+				(l2)	edge [stealth-, "Not selected to interview"]	(l0)
+						edge [stealth-, "Not selected to any project"]	(l3)
+				(l3)	edge [stealth-, "Interviewed for at\\least one project"]	(l1)
+				(l4)	edge [stealth-, "Interviews complete\\Selected to at\\least one project"]	(l3)
+				(l5)	edge [stealth-, "Applicant accepts\\project offer"]		(l4)
+				(l6)	edge [stealth-, "Applicant declines\\project offers"]	(l4)
+				(l7)	edge [stealth-, "Not selected to interview\\for 2 review cycles"]	(l2)
+				;
+
+	}
+\end{document}
