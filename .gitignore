@@ -1,1 +1,15 @@
 .DS_Store
+
+binary_protocol/test.dat
+
+binary_protocol/.ipynb_checkpoints/
+
+cpu_logger/.ipynb_checkpoints/
+
+website/.ipynb_checkpoints/
+
+website/expeditions/.ipynb_checkpoints/
+
+website/expeditions/expeditions.pkl
+
+website/expeditions.pkl
