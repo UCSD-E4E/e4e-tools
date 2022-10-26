@@ -1,0 +1,28 @@
+@startuml C Source Files
+[application.out] as app_out
+[autogen.sh] as autogen
+[configure.ac] as configure_ac
+[compile] as compile
+[configure] as configure
+[config.h] as config_h
+[install-sh] as install_sh
+[Makefile.am] as makefile_am
+[Makefile.in] as makefile_in
+[Makefile] as makefile
+[source.c] as source_c
+[source.h] as source_h
+[source.o] as source_o
+
+source_c --> source_o : make
+source_h --> source_o : make
+source_o --> app_out : make
+config_h --> source_o : make
+makefile --> source_o : make
+makefile_am --> makefile_in : ./autogen.sh
+makefile_in --> makefile : ./configure
+configure_ac --> configure : ./autogen.sh
+configure --> config_h : ./configure
+autogen --> compile : ./autogen.sh
+autogen --> configure : ./autogen.sh
+autogen --> install_sh : ./autogen.sh
+@enduml
