@@ -1,0 +1,285 @@
+<!-- wp:heading -->
+<h2>Mangrove Monitoring - March 2022</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p><strong>Location:</strong> Clarendon, Jamaica</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:list -->
+<ul><li>Nathan Hui*</li><li>Vannhi Huynh</li><li>Eric Delucien</li><li>Chris Crutchfield</li><li>Dillon Hicks</li><li>Jonathan Hsu</li></ul
+<!-- /wp:list -->
+
+<!-- wp:heading -->
+<h2>Acoustic Species ID - August 2021</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p><strong>Location:</strong> La Jolla, CA</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:list -->
+<ul><li>Jacob Ayers*</li><li>Sean Perry</li><li>Mugen Blue</li></ul
+<!-- /wp:list -->
+
+<!-- wp:heading -->
+<h2>FishSense - August 2021</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p><strong>Location:</strong> Ensenada, Mexico</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:list -->
+<ul><li>Peter Tueller*</li><li>Ronan Wallace</li><li>Patrick Paxson</li></ul
+<!-- /wp:list -->
+
+<!-- wp:heading -->
+<h2>Maya Archaeology - July 2021</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p><strong>Location:</strong> El Zotz - Guatemala
+Tikkal - Guatemala</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:list -->
+<ul><li>Giovanni Vindiola</li><li>Peter Tueller</li><li>Jennifer Switzer</li><li>Curt Schurgers</li></ul
+<!-- /wp:list -->
+
+<!-- wp:heading -->
+<h2>Radio Telemetry Tracker - August 2019</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p><strong>Location:</strong> Turks and Caicos Islands</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:list -->
+<ul><li>Eric Yu</li><li>Emmanuel Gharehbekloo</li></ul
+<!-- /wp:list -->
+
+<!-- wp:heading -->
+<h2>Mangrove Monitoring - July 2019</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p><strong>Location:</strong> La Paz, Mexico</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:list -->
+<ul><li>Arden Ma</li><li>Enosh Reeder</li><li>Natasha Hellebrandt</li><li>Sam Ehrenstein</li><li>Christina Bambini</li><li>Allison Busa</li></ul
+<!-- /wp:list -->
+
+<!-- wp:heading -->
+<h2><a href="http://e4e.ucsd.edu/coastal-conservation/mangrove-monitoring-reu-trip-july-2018" data-type="URL" data-id="http://e4e.ucsd.edu/coastal-conservation/mangrove-monitoring-reu-trip-july-2018">Mangrove Monitoring</a> - July 2018</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p><strong>Location:</strong> Baja California</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:list -->
+<ul><li>Dillon Hicks*</li><li>Kathy Qi*</li><li>Eric Lo*</li><li>Catherine Lee</li><li>Savannah Longoria</li><li>Brian Rush</li></ul
+<!-- /wp:list -->
+
+<!-- wp:heading -->
+<h2><a href="http://e4e.ucsd.edu/uncategorized/mangrove-monitoring-in-puerto-san-carlos-may-2018" data-type="URL" data-id="http://e4e.ucsd.edu/uncategorized/mangrove-monitoring-in-puerto-san-carlos-may-2018">Mangrove Monitoring</a> - May 2018</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p><strong>Location:</strong> Baja California</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:list -->
+<ul><li>Nikko Bouck*</li><li>Eric Lo</li></ul
+<!-- /wp:list -->
+
+<!-- wp:heading -->
+<h2>Radio Telemetry Tracker - August 2017</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p><strong>Location:</strong> Cayman Islands</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:list -->
+<ul><li>Nathan Hui*</li><li>Matthew Epperson</li></ul
+<!-- /wp:list -->
+
+<!-- wp:heading -->
+<h2><a href="http://gulfprogram.ucsd.edu/general/mangroves-from-above-and-below/" data-type="URL" data-id="http://gulfprogram.ucsd.edu/general/mangroves-from-above-and-below/">Mangrove Monitoring</a> - July 2017</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p><strong>Location:</strong> Baja California</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:list -->
+<ul><li>Nikko Bouck*</li><li>Eric Lo</li><li>Brynn Hall</li></ul
+<!-- /wp:list -->
+
+<!-- wp:heading -->
+<h2>Maya Archaeology - June 2017</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p><strong>Location:</strong> El Zotz - Guatemala</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:list -->
+<ul><li>Quentin Gautier</li><li>Peter Tueller</li><li>Curt Schurgers</li></ul
+<!-- /wp:list -->
+
+<!-- wp:heading -->
+<h2>Maya Archaeology - June 2016</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p><strong>Location:</strong> El Zotz - Guatemala</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2>Radio Telemetry Tracker - May 2016</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p><strong>Location:</strong> Cayman Islands</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:list -->
+<ul><li>Nathan Hui*</li></ul
+<!-- /wp:list -->
+
+<!-- wp:heading -->
+<h2>Harpy Eagle - March 2016</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p><strong>Location:</strong> Bladen Natural Reserve - Belize</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:list -->
+<ul><li>Sebastian Afshari*</li><li>Eric Lo</li><li>Curt Schurgers</li></ul
+<!-- /wp:list -->
+
+<!-- wp:heading -->
+<h2><a href="http://e4e.ucsd.edu/radio-collar-tracker/summer-2015-airborne-radio-collar-tracknig" data-type="URL" data-id="http://e4e.ucsd.edu/radio-collar-tracker/summer-2015-airborne-radio-collar-tracknig">Radio Telemetry Tracker</a> - September 2015</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p><strong>Location:</strong> Dominican Republic</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:list -->
+<ul><li>Nathan Hui</li><li>Eric Lo</li></ul
+<!-- /wp:list -->
+
+<!-- wp:heading -->
+<h2><a href="http://e4e.ucsd.edu/vaquita/spherecam-and-mariner-testing-for-expedition-vaquita" data-type="URL" data-id="http://e4e.ucsd.edu/vaquita/spherecam-and-mariner-testing-for-expedition-vaquita">Vaquita</a> - September 2015</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p><strong>Location:</strong> Mission Bay</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2><a href="http://e4e.ucsd.edu/radio-collar-tracker/summer-2015-airborne-radio-collar-tracknig" data-type="URL" data-id="http://e4e.ucsd.edu/radio-collar-tracker/summer-2015-airborne-radio-collar-tracknig">Radio Telemetry Tracker</a> - July 2015</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p><strong>Location:</strong> Dominican Republic</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:list -->
+<ul><li>Nathan Hui</li><li>Eric Lo</li></ul
+<!-- /wp:list -->
+
+<!-- wp:heading -->
+<h2>Maya Archaeology - June 2015</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p><strong>Location:</strong> El Zotz - Guatemala</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2>Angry Birds - March 2015</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p><strong>Location:</strong> San Diego Zoo - Balboa Park</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2><a href="http://e4e.ucsd.edu/underwater-projects/expedition-lake-tahoe" data-type="URL" data-id="http://e4e.ucsd.edu/underwater-projects/expedition-lake-tahoe">Nautical Archaeology</a> - June 2014</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p><strong>Location:</strong> Lake Tahoe</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2>Maya Archaeology - May 2014</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p><strong>Location:</strong> El Zotz - Guatemala</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2><a href="http://e4e.ucsd.edu/stabilized-aerial-camera-platform/an-aerial-perspective-on-the-native-diver-excavation" data-type="URL" data-id="http://e4e.ucsd.edu/stabilized-aerial-camera-platform/an-aerial-perspective-on-the-native-diver-excavation">Stabilized Aerial Camera Platform - Native Diver Excavation</a> - March 2014</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p><strong>Location:</strong> Inglewood - California</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2>Maya Archaeology - February 2014</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p><strong>Location:</strong> El Zotz - Guatemala</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2><a href="http://e4e.ucsd.edu/vaquita/baja-california-site-visit" data-type="URL" data-id="http://e4e.ucsd.edu/vaquita/baja-california-site-visit">Vaquita</a> - January 2014</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p><strong>Location:</strong> San Felipe - Mexico</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2>Intelligent Camera Trap - December 2013</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p><strong>Location:</strong> San Diego Zoo Safari Park - Escondido</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2><a href="http://e4e.ucsd.edu/stabilized-aerial-camera-platform/balloon-in-the-field" data-type="URL" data-id="http://e4e.ucsd.edu/stabilized-aerial-camera-platform/balloon-in-the-field">Del Dios Monitoring</a> - August 2013</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p><strong>Location:</strong> San Dieguito River Valley</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2>Wolf Tracking - July 2013</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p><strong>Location:</strong> California Wolf Center - Julian</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2><a href="http://e4e.ucsd.edu/intelligent-camera-trap/the-tiger-tracker-begins" data-type="URL" data-id="http://e4e.ucsd.edu/intelligent-camera-trap/the-tiger-tracker-begins">Intelligent Camera Trap</a> - July 2013</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p><strong>Location:</strong> San Diego Zoo Safari Park - Escondido</p>
+<!-- /wp:paragraph -->
+
