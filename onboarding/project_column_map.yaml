@@ -1,0 +1,50 @@
+static:
+  timestamp: Timestamp
+  email: Email Address
+  permanent_email: Permanent Email Address
+  first_name: First Name
+  preferred_name: Preferred Name/Identifier
+  last_name: Last Name
+  student_level: Student Level
+  expected_graduation: Expected Graduation Quarter
+  major: Major (select other for double majors)
+  minor: Minor
+  institute: Institute Affiliation
+  adult: Are you 18 or over?
+  resume: Please upload your resume/CV.
+  estimated_contribution: How many hours a week do you think you can contribute on a weekly basis?
+  recording_consent: 'We would like to record all of the interviews to maximize our ability to place you into a project.  Do you consent to your interview being recorded? '
+  info_session_attendance: Did you attend the info session for this quarter?
+  info_session_leads: If so, which project leads did you speak with?
+  marketing: How did you hear about us?
+  llm_use: Did you use a Large Language Model (e.g., ChatGPT, Bard) to help you write this application? If so, how did you use it?
+  comments: Comments or Feedback
+projects:
+  aid:
+    paper_summary: 'Please write a short summary of the paper(s) you read.'
+    issues: 'Based on the paper(s) you read, what are the current technical issues faced in this field? How are/should these issues be solved?'
+    contributions: 'How do you see yourself contributing meaningfully to this project?'
+  bom:
+    paper_summary: 'Please write a short summary of the paper(s) you read..1'
+    issues: 'Based on the paper(s) you read, what are the current technical issues faced in this field? How are/should these issues be solved?.1'
+    contributions: 'How do you see yourself contributing meaningfully to this project?.1'
+  fs:
+    paper_summary: 'Please write a short summary of the paper(s) you read..2'
+    issues: 'Based on the paper(s) you read, what are the current technical issues faced in this field? How are/should these issues be solved?.2'
+    contributions: 'How do you see yourself contributing meaningfully to this project?.2'
+  mm:
+    paper_summary: 'Please write a short summary of the paper(s) you read..3'
+    issues: 'Based on the paper(s) you read, what are the current technical issues faced in this field? How are/should these issues be solved?.3'
+    contributions: 'How do you see yourself contributing meaningfully to this project?.3'
+  rct:
+    paper_summary: 'Please write a short summary of the paper(s) you read..4'
+    issues: 'Based on the paper(s) you read, what are the current technical issues faced in this field? How are/should these issues be solved?.4'
+    contributions: 'How do you see yourself contributing meaningfully to this project?.4'
+  sf:
+    paper_summary: 'Please write a short summary of the paper(s) you read..5'
+    issues: 'Based on the paper(s) you read, what are the current technical issues faced in this field? How are/should these issues be solved?.5'
+    contributions: 'How do you see yourself contributing meaningfully to this project?.5'
+  rsg:
+    paper_summary: 'Please write a short summary of the paper(s) you read..6'
+    issues: 'Based on the paper(s) you read, what are the current technical issues faced in this field? How are/should these issues be solved?.6'
+    contributions: 'How do you see yourself contributing meaningfully to this group?'
