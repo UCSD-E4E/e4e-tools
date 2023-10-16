@@ -16,9 +16,9 @@ import yaml
 class ProjectApplication:
     """Individual Project Application
     """
-    paper_summary: str
-    issues: str
-    contributions: str
+    paper_summary: str = ''
+    issues: str = ''
+    contributions: str = ''
 
 
 class Project(Enum):
@@ -102,9 +102,9 @@ def export_apps_to_html(apps: Sequence[Application], directory: Path):
         for proj_name, proj_app in app.project_application.items():
             md_content += f'# {proj_name.name}\n'
             for key, question in project_column_map[proj_name].items():
-                md_content += f'## {question}\n```'
-                md_content += getattr(proj_app, key)
-                md_content += '```\n\n'
+                md_content += f'## {question}\n'
+                md_content += str(getattr(proj_app, key)).replace('\n', '\n\n')
+                md_content += '\n\n'
 
         with open(md_fname, 'w', encoding='utf-8') as handle: # pylint: disable=redefined-outer-name
             # Ignore W0621 redefined outer name due to general context manager name
