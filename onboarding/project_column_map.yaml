@@ -41,10 +41,9 @@ projects:
     issues: 'Based on the paper(s) you read, what are the current technical issues faced in this field? How are/should these issues be solved?.4'
     contributions: 'How do you see yourself contributing meaningfully to this project?.4'
   sf:
-    paper_summary: 'Please write a short summary of the paper(s) you read..5'
-    issues: 'Based on the paper(s) you read, what are the current technical issues faced in this field? How are/should these issues be solved?.5'
-    contributions: 'How do you see yourself contributing meaningfully to this project?.5'
-  rsg:
     paper_summary: 'Please write a short summary of the paper(s) you read..6'
     issues: 'Based on the paper(s) you read, what are the current technical issues faced in this field? How are/should these issues be solved?.6'
+    contributions: 'How do you see yourself contributing meaningfully to this project?.5'
+  rsg:
+    paper_summary: 'Please write a short summary of the paper(s) you read..5'
     contributions: 'How do you see yourself contributing meaningfully to this group?'
